@@ -172,6 +172,8 @@ export interface BasicTableProps<T = any> {
   searchInfo?: Recordable;
   // 使用搜索表单
   useSearchForm?: boolean;
+  // 显示搜索表单
+  formDisplay?: boolean;
   // 表单配置
   formConfig?: Partial<FormProps>;
   // 列配置

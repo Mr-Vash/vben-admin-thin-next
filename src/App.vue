@@ -31,3 +31,8 @@
     },
   });
 </script>
+<style>
+  .custom-mb-0 .ant-form-item {
+    margin-bottom: 0 !important;
+  }
+</style>

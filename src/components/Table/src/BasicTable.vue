@@ -1,19 +1,21 @@
 <template>
   <div ref="wrapRef" :class="getWrapperClass">
-    <BasicForm
-      submitOnReset
-      v-bind="getFormProps"
-      v-if="getBindValues.useSearchForm"
-      :submitButtonOptions="{ loading: getLoading }"
-      :tableAction="tableAction"
-      @register="registerForm"
-      @submit="handleSearchInfoChange"
-      @advanced-change="redoHeight"
-    >
-      <template #[replaceFormSlotKey(item)]="data" v-for="item in getFormSlotKeys">
-        <slot :name="item" v-bind="data"></slot>
-      </template>
-    </BasicForm>
+    <div v-show="getBindValues.formDisplay">
+      <BasicForm
+        submitOnReset
+        v-bind="getFormProps"
+        v-if="getBindValues.useSearchForm"
+        :submitButtonOptions="{ loading: getLoading }"
+        :tableAction="tableAction"
+        @register="registerForm"
+        @submit="handleSearchInfoChange"
+        @advanced-change="redoHeight"
+      >
+        <template #[replaceFormSlotKey(item)]="data" v-for="item in getFormSlotKeys">
+          <slot :name="item" v-bind="data"></slot>
+        </template>
+      </BasicForm>
+    </div>
 
     <Table
       ref="tableElRef"
