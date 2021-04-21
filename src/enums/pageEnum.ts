@@ -4,6 +4,9 @@ export enum PageEnum {
   // basic home path
   BASE_HOME = '/dashboard',
 
+  // 员工列表
+  EMPLOYEE = '/personnel/employee',
+
   // 员工录入信息
   EMPLOYEE_UPDATE = '/personnel/employeeUpdate',
 

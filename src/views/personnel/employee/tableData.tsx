@@ -10,8 +10,69 @@ import {
   getRoleList,
   getBanCiList,
   getDepositList,
+  getNationList,
 } from '/@/api/sys/dictionary';
 import { getDateYearSub, getIdCardInfo } from '/@/utils/custom';
+
+export const columns: BasicColumn[] = [
+  {
+    title: '角色名称',
+    dataIndex: 'roleName',
+    width: 200,
+  },
+  {
+    title: '角色值',
+    dataIndex: 'roleValue',
+    width: 180,
+  },
+  {
+    title: '排序',
+    dataIndex: 'orderNo',
+    width: 50,
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    width: 80,
+    customRender: ({ record }) => {
+      const status = record.status;
+      const enable = ~~status === 0;
+      const color = enable ? 'green' : 'red';
+      const text = enable ? '启用' : '停用';
+      return h(Tag, { color: color }, () => text);
+    },
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    width: 180,
+  },
+  {
+    title: '备注',
+    dataIndex: 'remark',
+  },
+];
+
+export const searchFormSchema: FormSchema[] = [
+  {
+    field: 'roleNme',
+    label: '角色名称',
+    component: 'Input',
+    colProps: { span: 8 },
+  },
+  {
+    field: 'status',
+    label: '状态',
+    component: 'Select',
+    componentProps: {
+      options: [
+        { label: '启用', value: '0' },
+        { label: '停用', value: '1' },
+      ],
+    },
+    colProps: { span: 8 },
+  },
+];
 
 export function getBasicColumns(): BasicColumn[] {
   return [
@@ -123,27 +184,25 @@ export function getDataConfig(): Partial<FormProps> {
   };
 }
 
-const basicOptions: LabelValueOptions = [
-  {
-    label: '付晓晓',
-    value: '1',
-  },
-  {
-    label: '周毛毛',
-    value: '2',
-  },
-];
+export function getBasicData() {
+  const data = (() => {
+    const result: any[] = [];
+    for (let index = 0; index < 4; index++) {
+      result.push({
+        id: `${index}`,
+        orderNo: `${index + 1}`,
+        roleName: ['超级管理员', '管理员', '文章管理员', '普通用户'][index],
+        roleValue: '@first',
+        createTime: '@datetime',
+        remark: '@cword(10,20)',
+        'status|1': ['0', '1'],
+      });
+    }
+    return result;
+  })();
 
-const storeTypeOptions: LabelValueOptions = [
-  {
-    label: '私密',
-    value: '1',
-  },
-  {
-    label: '公开',
-    value: '2',
-  },
-];
+  return data;
+}
 
 export const schemas: FormSchema[] = [
   {
@@ -154,21 +213,28 @@ export const schemas: FormSchema[] = [
   },
   {
     field: 'nation',
-    component: 'Input',
+    component: 'ApiSelect',
+    componentProps: {
+      api: getNationList,
+      labelField: 'name',
+      valueField: 'name',
+    },
+    required: true,
     label: '民族',
     colProps: {
       offset: 2,
     },
-    renderComponentContent: () => {
-      return {
-        suffix: () => '族',
-      };
-    },
+    // renderComponentContent: () => {
+    //   return {
+    //     suffix: () => '族',
+    //   };
+    // },
   },
   {
     field: 'sex',
     component: 'RadioGroup',
     label: '性别',
+    required: true,
     colProps: {
       offset: 2,
     },
@@ -176,11 +242,11 @@ export const schemas: FormSchema[] = [
       options: [
         {
           label: '男',
-          value: '1',
+          value: '男',
         },
         {
           label: '女',
-          value: '2',
+          value: '女',
         },
       ],
     },
@@ -191,9 +257,10 @@ export const schemas: FormSchema[] = [
     componentProps: {
       api: getPoliticalList,
       labelField: 'name',
-      valueField: 'id',
+      valueField: 'name',
     },
     label: '政治面貌',
+    required: true,
   },
   {
     field: 'education',
@@ -201,12 +268,13 @@ export const schemas: FormSchema[] = [
     componentProps: {
       api: getEducationList,
       labelField: 'name',
-      valueField: 'id',
+      valueField: 'name',
     },
     label: '学历',
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'phone',
@@ -292,6 +360,7 @@ export const schemas: FormSchema[] = [
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'comeFrom',
@@ -300,11 +369,13 @@ export const schemas: FormSchema[] = [
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'address',
     component: 'Input',
     label: '现居住地址',
+    required: true,
   },
   {
     field: 'emergencyContact',
@@ -313,71 +384,30 @@ export const schemas: FormSchema[] = [
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'emergencyPhone',
     component: 'Input',
     label: '紧急联系人电话',
+    rules: [
+      {
+        required: true,
+        // @ts-ignore
+        validator: async (rule, value) => {
+          if (!/^[0-9]*$/.test(value)) {
+            /* eslint-disable-next-line */
+            return Promise.reject('请填写数字');
+          }
+          return Promise.resolve();
+        },
+        trigger: 'change',
+      },
+    ],
     colProps: {
       offset: 2,
     },
   },
-
-  // {
-  //   field: '民族',
-  //   component: 'Input',
-  //   label: '仓库域名',
-  //   required: true,
-  //   componentProps: {
-  //     addonBefore: 'http://',
-  //     addonAfter: 'com',
-  //   },
-  //   colProps: {
-  //     offset: 2,
-  //   },
-  // },
-  // {
-  //   field: 'f3',
-  //   component: 'Select',
-  //   label: '仓库管理员',
-  //   componentProps: {
-  //     options: basicOptions,
-  //   },
-  //   required: true,
-  //   colProps: {
-  //     offset: 2,
-  //   },
-  // },
-  // {
-  //   field: 'f4',
-  //   component: 'Select',
-  //   label: '审批人',
-  //   componentProps: {
-  //     options: basicOptions,
-  //   },
-  //   required: true,
-  // },
-  // {
-  //   field: 'f5',
-  //   component: 'RangePicker',
-  //   label: '生效日期',
-  //   required: true,
-  //   colProps: {
-  //     offset: 2,
-  //   },
-  // },
-  // {
-  //   field: 'f6',
-  //   component: 'Select',
-  //   label: '仓库类型',
-  //   componentProps: {
-  //     options: storeTypeOptions,
-  //   },
-  //   required: true,
-  //   colProps: {
-  //     offset: 2,
-  //   },
-  // },
 ];
 
 export const studySchemas: FormSchema[] = [
@@ -388,6 +418,7 @@ export const studySchemas: FormSchema[] = [
     componentProps: {
       rows: 4,
     },
+    required: true,
   },
   {
     field: 'graduateTime',
@@ -399,6 +430,7 @@ export const studySchemas: FormSchema[] = [
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'major',
@@ -410,11 +442,13 @@ export const studySchemas: FormSchema[] = [
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'cert',
     component: 'Input',
     label: '证书',
+    required: true,
   },
   {
     field: 'title',
@@ -423,67 +457,13 @@ export const studySchemas: FormSchema[] = [
     componentProps: {
       api: getTitleList,
       labelField: 'name',
-      valueField: 'id',
+      valueField: 'name',
     },
     colProps: {
       offset: 2,
     },
+    required: true,
   },
-  // {
-  //   field: '民族',
-  //   component: 'Input',
-  //   label: '仓库域名',
-  //   required: true,
-  //   componentProps: {
-  //     addonBefore: 'http://',
-  //     addonAfter: 'com',
-  //   },
-  //   colProps: {
-  //     offset: 2,
-  //   },
-  // },
-  // {
-  //   field: 'f3',
-  //   component: 'Select',
-  //   label: '仓库管理员',
-  //   componentProps: {
-  //     options: basicOptions,
-  //   },
-  //   required: true,
-  //   colProps: {
-  //     offset: 2,
-  //   },
-  // },
-  // {
-  //   field: 'f4',
-  //   component: 'Select',
-  //   label: '审批人',
-  //   componentProps: {
-  //     options: basicOptions,
-  //   },
-  //   required: true,
-  // },
-  // {
-  //   field: 'f5',
-  //   component: 'RangePicker',
-  //   label: '生效日期',
-  //   required: true,
-  //   colProps: {
-  //     offset: 2,
-  //   },
-  // },
-  // {
-  //   field: 'f6',
-  //   component: 'Select',
-  //   label: '仓库类型',
-  //   componentProps: {
-  //     options: storeTypeOptions,
-  //   },
-  //   required: true,
-  //   colProps: {
-  //     offset: 2,
-  //   },
-  // },
 ];
 
 export const taskSchemas: FormSchema[] = [
@@ -491,15 +471,17 @@ export const taskSchemas: FormSchema[] = [
     field: 'departmentSelect',
     component: 'Cascader',
     label: '部门/岗位/职级',
-    componentProps: {
-      options: [],
+    componentProps: () => {
+      return {
+        options: [],
+      };
     },
     rules: [
       {
         required: true,
         // @ts-ignore
         validator: async (rule, value) => {
-          if (!(value['0'] && value['1'] && value['2'])) {
+          if (!(value && value['0'] && value['1'] && value['2'])) {
             /* eslint-disable-next-line */
             return Promise.reject('请完善岗位信息');
           }
@@ -516,11 +498,12 @@ export const taskSchemas: FormSchema[] = [
     componentProps: {
       api: getDutyList,
       labelField: 'name',
-      valueField: 'id',
+      valueField: 'name',
     },
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'role',
@@ -529,11 +512,12 @@ export const taskSchemas: FormSchema[] = [
     componentProps: {
       api: getRoleList,
       labelField: 'name',
-      valueField: 'id',
+      valueField: 'name',
     },
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'department',
@@ -561,8 +545,9 @@ export const taskSchemas: FormSchema[] = [
     componentProps: {
       api: getBanCiList,
       labelField: 'name',
-      valueField: 'id',
+      valueField: 'name',
     },
+    required: true,
   },
   {
     field: 'dutyTime',
@@ -574,11 +559,12 @@ export const taskSchemas: FormSchema[] = [
         style: { width: '100%' },
         valueFormat: 'YYYY-MM-DD',
         onChange: (e) => {
+          console.log(e);
           formModel.workYear = getDateYearSub(e);
         },
       };
     },
-
+    // rules: [{ type: 'array', required: true }],
     colProps: {
       offset: 2,
     },
@@ -601,6 +587,20 @@ export const taskSchemas: FormSchema[] = [
     colProps: {
       offset: 2,
     },
+    rules: [
+      {
+        required: true,
+        // @ts-ignore
+        validator: async (rule, value) => {
+          if (!/^[0-9]*$/.test(value)) {
+            /* eslint-disable-next-line */
+            return Promise.reject('请填写数字');
+          }
+          return Promise.resolve();
+        },
+        trigger: 'change',
+      },
+    ],
   },
   {
     field: 'deposit',
@@ -609,18 +609,32 @@ export const taskSchemas: FormSchema[] = [
     componentProps: {
       api: getDepositList,
       labelField: 'name',
-      valueField: 'id',
+      valueField: 'name',
     },
+    required: true,
   },
 
   {
     field: 'depositTimes',
     component: 'Input',
     label: '扣取次数',
-    required: true,
     colProps: {
       offset: 2,
     },
+    rules: [
+      {
+        required: true,
+        // @ts-ignore
+        validator: async (rule, value) => {
+          if (!/^[0-9]*$/.test(value)) {
+            /* eslint-disable-next-line */
+            return Promise.reject('请填写数字');
+          }
+          return Promise.resolve();
+        },
+        trigger: 'change',
+      },
+    ],
   },
 
   {
@@ -630,21 +644,24 @@ export const taskSchemas: FormSchema[] = [
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'locker',
     component: 'Input',
     label: '钥匙柜',
+    required: true,
   },
 
   {
     field: 'transferIn',
-    component: 'Select',
+    component: 'DatePicker',
     label: '调入时间',
     componentProps: {
-      options: storeTypeOptions,
+      valueFormat: 'YYYY-MM-DD',
+      style: { width: '100%' },
     },
-    required: true,
+    // required: true,
     colProps: {
       offset: 2,
     },
@@ -656,13 +673,16 @@ export const taskSchemas: FormSchema[] = [
     colProps: {
       offset: 2,
     },
+    required: true,
   },
   {
     field: 'contractAt',
     component: 'DatePicker',
     label: '合同签订时间',
-    required: true,
+    // required: true,
+    defaultValue: '',
     componentProps: {
+      valueFormat: 'YYYY-MM-DD',
       style: { width: '100%' },
     },
   },
@@ -670,8 +690,9 @@ export const taskSchemas: FormSchema[] = [
     field: 'healthAt',
     component: 'DatePicker',
     label: '健康证时间',
-    required: true,
+    // required: true,
     componentProps: {
+      valueFormat: 'YYYY-MM-DD',
       style: { width: '100%' },
     },
     colProps: {
@@ -686,17 +707,22 @@ export const taskSchemas: FormSchema[] = [
     colProps: {
       offset: 2,
     },
-    componentProps: {
-      options: [
-        {
-          label: '是',
-          value: '1',
+    componentProps: ({ formModel }) => {
+      return {
+        options: [
+          {
+            label: '是',
+            value: '是',
+          },
+          {
+            label: '否',
+            value: '否',
+          },
+        ],
+        onChange() {
+          formModel.socialAt = '';
         },
-        {
-          label: '否',
-          value: '2',
-        },
-      ],
+      };
     },
   },
 
@@ -704,9 +730,13 @@ export const taskSchemas: FormSchema[] = [
     field: 'socialAt',
     component: 'DatePicker',
     label: '社保缴纳时间',
-    required: true,
+    // required: true,
+    componentProps: {
+      valueFormat: 'YYYY-MM-DD',
+    },
+
     show: ({ model }) => {
-      return model.social === '1';
+      return model.social === '是';
     },
   },
 ];

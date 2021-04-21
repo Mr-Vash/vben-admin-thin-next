@@ -33,13 +33,25 @@
   import { studySchemas, schemas, taskSchemas, stateSchemas } from './tableData';
   import { Card } from 'ant-design-vue';
   import { getDepartmentSelectList } from '/@/api/personnel/department';
+  import { addEmployee, getEmployeeInfo, editEmployee } from '/@/api/personnel/employee';
+  import { useGo } from '/@/hooks/web/usePage';
+  import { PageEnum } from '/@/enums/pageEnum';
+  import { useRoute, useRouter } from 'vue-router';
+
+  import { useMessage } from '/@/hooks/web/useMessage';
+
+  import { useMultipleTabStore } from '/@/store/modules/multipleTab';
 
   export default defineComponent({
     components: { BasicForm, PageWrapper, [Card.name]: Card },
     setup() {
+      const route = useRoute();
+      const router = useRouter();
+      const tabStore = useMultipleTabStore();
+      const { createErrorModal } = useMessage();
       const tableRef = ref<{ getDataSource: () => any } | null>(null);
-
-      const [register, { validate }] = useForm({
+      const go = useGo();
+      const [register, { validate, setFieldsValue }] = useForm({
         baseColProps: {
           span: 6,
         },
@@ -47,7 +59,10 @@
         showActionButtonGroup: false,
       });
 
-      const [registerStudy, { validate: validateStudyForm }] = useForm({
+      const [
+        registerStudy,
+        { validate: validateStudyForm, setFieldsValue: setStudyValue },
+      ] = useForm({
         baseColProps: {
           span: 6,
         },
@@ -55,7 +70,10 @@
         showActionButtonGroup: false,
       });
 
-      const [registerTask, { validate: validateTaskForm, updateSchema }] = useForm({
+      const [
+        registerTask,
+        { validate: validateTaskForm, setFieldsValue: setTaskValue, updateSchema },
+      ] = useForm({
         baseColProps: {
           span: 6,
         },
@@ -63,24 +81,31 @@
         showActionButtonGroup: false,
       });
 
-      setTimeout(async function () {
+      async function getCaselect() {
         const options = await getDepartmentSelectList();
         updateSchema([
           {
             field: 'departmentSelect',
-            componentProps: {
-              options,
-              onChange: (e: any) => {
-                console.log(e);
-                // formModel.levelName = e.label;
-                // formModel.levelId = e.value;
-              },
+            componentProps: ({ formModel }) => {
+              return {
+                options,
+                onChange: (e: any) => {
+                  console.log(e);
+                  formModel.department = e[0];
+                  formModel.station = e[1];
+                  formModel.stationLevel = e[2];
+                },
+              };
             },
           },
         ]);
-      }, 0);
+      }
+      getCaselect();
 
-      const [registerState, { validate: validateStateForm }] = useForm({
+      const [
+        registerState,
+        { validate: validateStateForm, setFieldsValue: setStateValue },
+      ] = useForm({
         labelCol: {
           span: 0,
         },
@@ -91,19 +116,67 @@
         showActionButtonGroup: false,
       });
 
+      if (route.params.type == 'edit' && route.params.id) {
+        async function setFormFieldValue() {
+          const res = await getEmployeeInfo({ id: route.params.id.toString() });
+          console.log(res);
+
+          if (res) {
+            res.socialAt = res.socialAt ? res.socialAt : '';
+            setFieldsValue({
+              ...res,
+            });
+            setStudyValue({
+              ...res,
+            });
+            setTaskValue({
+              ...res,
+              departmentSelect: [res.department * 1, res.station * 1, res.stationLevel * 1],
+            });
+            setStateValue({
+              ...res,
+            });
+          } else {
+            createErrorModal({
+              title: '提示',
+              content: '找不到当前id对应的员工,点击返回',
+              onOk() {
+                tabStore.closeTabByKey(route.path, router);
+                go(PageEnum.EMPLOYEE, true);
+              },
+            });
+          }
+        }
+
+        setFormFieldValue();
+      }
+
       async function submitAll() {
         try {
           if (tableRef.value) {
             console.log('table data:', tableRef.value.getDataSource());
           }
 
-          const [values, taskValues] = await Promise.all([
+          const [values, studyValues, taskValues, stateValues] = await Promise.all([
             validate(),
             validateStudyForm(),
             validateTaskForm(),
             validateStateForm(),
           ]);
-          console.log('form data:', values, taskValues);
+          console.log('form data:', values, studyValues, taskValues, stateValues);
+          let params = Object.assign({}, values, studyValues, taskValues, stateValues);
+
+          delete params.departmentSelect;
+          let res;
+          if (route.params.type == 'add') {
+            res = await addEmployee(params);
+          } else {
+            params.id = route.params.id;
+            res = await editEmployee(params);
+          }
+          console.log(res);
+          tabStore.closeTabByKey(route.path, router);
+          go(PageEnum.EMPLOYEE, true);
         } catch (error) {}
       }
 

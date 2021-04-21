@@ -124,7 +124,6 @@
         if (unref(unClose)) {
           return;
         }
-
         tabStore.closeTabByKey(targetKey, router);
       }
       return {

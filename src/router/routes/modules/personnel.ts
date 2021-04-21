@@ -22,7 +22,7 @@ const personnel: AppRouteModule = {
     },
     {
       // path: 'employeeUpdate/:type+',  //传递数组： type：[]
-      path: 'employeeUpdate/:type/:id',
+      path: 'employeeUpdate/:type/:id(\\d+)?',
       name: 'EmployeeUpdate',
       component: () => import('/@/views/personnel/employee/update.vue'),
       meta: {

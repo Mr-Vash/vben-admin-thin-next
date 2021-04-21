@@ -151,3 +151,14 @@ export const getTitleList = () => {
     params: { dictType: 'title_option' },
   });
 };
+
+/**
+ * @description: 获取字典民族数据
+ */
+
+export const getNationList = () => {
+  return defHttp.get<getDictionaryDataListResultModel>({
+    url: Api.GetStationLevelList,
+    params: { dictType: 'nation_option' },
+  });
+};

@@ -1,30 +1,22 @@
 <template>
   <div>
-    <BasicTable @register="registerTable" :pagination="{ pageSize: 20 }">
-      <template #form-custom></template>
-
-      <template #title="{ record }">
-        <a>{{ record.dictName }}</a>
-      </template>
-
-      <template #updateTime="{ record }">
-        <Time :value="record.updateTime" mode="datetime" />
-      </template>
-
+    <BasicTable @register="registerTable">
       <template #toolbar>
+        <a-button type="primary" preIcon="carbon:filter-edit" @click="formDisplay = !formDisplay">
+          {{ formDisplay ? '隐藏' : '查询' }}
+        </a-button>
         <a-button type="primary" preIcon="akar-icons:plus" @click="handleCreate"> 新增 </a-button>
       </template>
-
       <template #action="{ record }">
         <TableAction
           :actions="[
             {
-              icon: 'clarity:note-edit-line',
-              onClick: handleEdit.bind(null, record),
+              icon: 'carbon:view',
+              onClick: handlePreview.bind(null, record),
             },
             {
-              icon: 'si-glyph:bullet-list',
-              onClick: handleLink.bind(null, record),
+              icon: 'clarity:note-edit-line',
+              onClick: handleEdit.bind(null, record),
             },
             {
               icon: 'ant-design:delete-outlined',
@@ -38,98 +30,84 @@
         />
       </template>
     </BasicTable>
-    <Modal @register="registerModal" @success="handleSuccess" />
+    <EmployeeDrawer @register="registerDrawer" @success="handleSuccess" />
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent } from 'vue';
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getBasicColumns, getFormConfig } from './tableData';
+  import { defineComponent, ref } from 'vue';
 
-  import { getDictionaryTypeList, delDictionaryType } from '/@/api/sys/dictionary';
+  import { BasicTable, useTable, TableAction } from '/@/components/Table';
+
+  import { useDrawer } from '/@/components/Drawer';
+  import EmployeeDrawer from './components/EmployeeDrawer.vue';
+
+  import { getBasicData, columns, searchFormSchema } from './tableData';
 
   import { useGo } from '/@/hooks/web/usePage';
   import { PageEnum } from '/@/enums/pageEnum';
 
-  import { useModal } from '/@/components/Modal';
-  import Modal from './components/Modal.vue';
-
-  import { Time } from '/@/components/Time';
-
   export default defineComponent({
-    components: { BasicTable, Modal, Time, TableAction },
+    name: 'EmployeeManagement',
+    components: { BasicTable, EmployeeDrawer, TableAction },
     setup() {
-      const [registerModal, { openModal }] = useModal();
+      const [registerDrawer, { openDrawer }] = useDrawer();
+      let formDisplay = ref(true);
       const go = useGo();
-
-      const [registerTable, { getForm, reload }] = useTable({
-        title: '字典类型',
-        api: getDictionaryTypeList,
-        columns: getBasicColumns(),
+      const [registerTable, { reload }] = useTable({
+        title: '员工列表',
+        dataSource: getBasicData(),
+        columns,
+        formConfig: {
+          labelWidth: 120,
+          schemas: searchFormSchema,
+        },
+        formDisplay,
         useSearchForm: true,
-        formDisplay: true,
-        formConfig: getFormConfig(),
         showTableSetting: true,
+        bordered: true,
+        showIndexColumn: false,
         actionColumn: {
           width: 200,
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
+          fixed: undefined,
         },
       });
 
-      function getFormValues() {
-        console.log(getForm().getFieldsValue());
-        console.log(getForm());
+      function handleCreate() {
+        openDrawer(true, {
+          isUpdate: false,
+        });
       }
 
-      async function handleDelete(record: Recordable) {
-        console.log('点击了删除', record);
-        console.log(record.id);
-        await delDictionaryType({ id: record.id });
-        reload();
+      function handleEdit(record: Recordable) {
+        go(PageEnum.EMPLOYEE_UPDATE + '/edit/' + record.id);
       }
-      function handleOpen(record: Recordable) {
-        console.log('点击了启用', record);
+
+      function handleDelete(record: Recordable) {
+        console.log(record);
       }
 
       function handleSuccess() {
         reload();
       }
 
-      function handlePreview() {}
-
-      function handleLink(record: Recordable) {
-        go(PageEnum.DICTIONARY_DATA + '/' + record.dictType);
-      }
-
-      function handleEdit(record: Recordable) {
-        console.log(record);
-        openModal(true, {
+      function handlePreview(record: Recordable) {
+        openDrawer(true, {
           record,
           isUpdate: true,
         });
       }
-
-      function handleCreate(record: Recordable) {
-        console.log(record);
-        openModal(true, {
-          record,
-          isUpdate: false,
-        });
-      }
-
       return {
-        handleLink,
+        handlePreview,
+        formDisplay,
         registerTable,
-        getFormValues,
+        registerDrawer,
+        handleCreate,
         handleEdit,
         handleDelete,
-        handleOpen,
-        registerModal,
-        handlePreview,
         handleSuccess,
-        handleCreate,
       };
     },
   });
