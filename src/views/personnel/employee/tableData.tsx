@@ -2,6 +2,7 @@ import { FormProps, FormSchema } from '/@/components/Table';
 import { BasicColumn } from '/@/components/Table/src/types/table';
 import { h } from 'vue';
 import { Tag } from 'ant-design-vue';
+// import {Input, InputNumber } from 'ant-design-vue';
 import {
   getPoliticalList,
   getEducationList,
@@ -13,22 +14,36 @@ import {
   getNationList,
 } from '/@/api/sys/dictionary';
 import { getDateYearSub, getIdCardInfo } from '/@/utils/custom';
+import { formatToDate } from '/@/utils/dateUtil';
 
 export const columns: BasicColumn[] = [
   {
-    title: '角色名称',
-    dataIndex: 'roleName',
+    title: '姓名',
+    dataIndex: 'name',
     width: 200,
   },
+
   {
-    title: '角色值',
-    dataIndex: 'roleValue',
-    width: 180,
+    title: '性别',
+    dataIndex: 'sex',
+    width: 80,
   },
+
   {
-    title: '排序',
-    dataIndex: 'orderNo',
-    width: 50,
+    title: '民族',
+    dataIndex: 'nation',
+    width: 80,
+  },
+
+  {
+    title: '职务/角色',
+    dataIndex: 'role',
+    width: 180,
+    customRender: ({ record }) => {
+      const color = 'blue';
+      const text = record.duty + '/' + record.role;
+      return h(Tag, { color: color }, () => text);
+    },
   },
   {
     title: '状态',
@@ -36,41 +51,152 @@ export const columns: BasicColumn[] = [
     width: 80,
     customRender: ({ record }) => {
       const status = record.status;
-      const enable = ~~status === 0;
+      const enable = ~~status === 1;
       const color = enable ? 'green' : 'red';
       const text = enable ? '启用' : '停用';
       return h(Tag, { color: color }, () => text);
     },
   },
   {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    width: 180,
+    title: '入职时间',
+    dataIndex: 'dutyTime',
+    width: 150,
+    sorter: true,
+    slots: { customRender: 'dutyTime' },
+  },
+
+  {
+    title: '现住址',
+    dataIndex: 'address',
   },
   {
-    title: '备注',
-    dataIndex: 'remark',
+    title: '电话',
+    dataIndex: 'phone',
+    width: 150,
   },
 ];
 
 export const searchFormSchema: FormSchema[] = [
   {
-    field: 'roleNme',
-    label: '角色名称',
+    field: 'name',
+    label: '员工姓名',
     component: 'Input',
-    colProps: { span: 8 },
+    colProps: { span: 4 },
   },
   {
-    field: 'status',
-    label: '状态',
-    component: 'Select',
+    field: 'banCi',
+    label: '班次',
+    component: 'ApiSelect',
     componentProps: {
-      options: [
-        { label: '启用', value: '0' },
-        { label: '停用', value: '1' },
-      ],
+      api: getBanCiList,
+      labelField: 'name',
+      valueField: 'name',
     },
+    colProps: { span: 4 },
+  },
+  {
+    field: 'startAge',
+    label: '年龄',
+    component: 'InputNumber',
+    colProps: { span: 4 },
+    componentProps: ({ formModel }) => {
+      return {
+        placeholder: '开始年龄',
+        min: 0,
+        max: 100,
+        onChange: (e) => {
+          console.log(e);
+          // formModel.startAge=e
+          console.log(formModel.startAge);
+          console.log(formModel.endAge);
+
+          if (e > formModel.endAge && formModel.endAge && formModel.endAge != 0) {
+            // formModel.startAge= formModel.endAge
+            formModel.endAge = e;
+            console.log('值改变：' + formModel.startAge);
+          }
+        },
+      };
+    },
+  },
+  {
+    field: 'ageLabel',
+    label: '~',
+    labelWidth: '0',
+    component: 'Input',
+    colProps: { span: 1 },
+    slot: 'custom',
+  },
+  // {
+  //   field: 'startAge',
+  //   label: '起止年龄',
+  //   component: 'Input',
+  //   colProps: { span: 4 },
+  // },
+  // {
+  //   field: `ageRange`,
+  //   label: `起止年龄`,
+  //   component: 'InputGroup',
+  //   slot: 'custom',
+  //   colProps: {
+  //     xl: 12,
+  //     xxl: 8,
+  //   },
+  //   defaultValue:[0,100]
+
+  //   // render:(e) => {
+  //   //   console.log(e)
+  //   //   return [
+  //   //     h(Input, {
+  //   //       placeholder: '请输入',
+  //   //       onChange: (e: ChangeEvent) => {
+  //   //         console.log(e)
+  //   //       },
+  //   //     }),
+  //   //     h(Input, {
+  //   //       placeholder: '请输入',
+  //   //       onChange: (e: ChangeEvent) => {
+  //   //         console.log(e)
+  //   //       },
+  //   //     })
+  //   //   ]
+  //   // },
+
+  // },
+  {
+    field: 'endAge',
+    label: '-',
+    component: 'InputNumber',
+    labelWidth: '0',
+    colProps: { span: 2 },
+    componentProps: ({ formModel }) => {
+      return {
+        placeholder: '结束年龄',
+        min: 0,
+        max: 99,
+        onChange: (e) => {
+          console.log(e);
+          console.log(formModel.startAge);
+          console.log(formModel.endAge);
+
+          if (e < formModel.startAge && formModel.startAge) {
+            formModel.startAge = e;
+          }
+        },
+      };
+    },
+  },
+  {
+    field: 'dutyTimeRange',
+    component: 'RangePicker',
+    label: '入职时间',
     colProps: { span: 8 },
+    componentProps: {
+      valueFormat: 'YYYY-MM-DD',
+      onChange(e) {
+        console.log(e);
+      },
+    },
   },
 ];
 
@@ -553,14 +679,15 @@ export const taskSchemas: FormSchema[] = [
     field: 'dutyTime',
     component: 'DatePicker',
     label: '入职时间',
-
+    required: true,
     componentProps: ({ formModel }) => {
       return {
         style: { width: '100%' },
-        valueFormat: 'YYYY-MM-DD',
+        // valueFormat: 'YYYY-MM-DD',
         onChange: (e) => {
           console.log(e);
-          formModel.workYear = getDateYearSub(e);
+          const datePicker = formatToDate(e);
+          formModel.workYear = getDateYearSub(datePicker);
         },
       };
     },
@@ -657,8 +784,9 @@ export const taskSchemas: FormSchema[] = [
     field: 'transferIn',
     component: 'DatePicker',
     label: '调入时间',
+    required: true,
     componentProps: {
-      valueFormat: 'YYYY-MM-DD',
+      // valueFormat: 'YYYY-MM-DD',
       style: { width: '100%' },
     },
     // required: true,
@@ -679,10 +807,10 @@ export const taskSchemas: FormSchema[] = [
     field: 'contractAt',
     component: 'DatePicker',
     label: '合同签订时间',
-    // required: true,
+    required: true,
     defaultValue: '',
     componentProps: {
-      valueFormat: 'YYYY-MM-DD',
+      // valueFormat: 'YYYY-MM-DD',
       style: { width: '100%' },
     },
   },
@@ -690,9 +818,9 @@ export const taskSchemas: FormSchema[] = [
     field: 'healthAt',
     component: 'DatePicker',
     label: '健康证时间',
-    // required: true,
+    required: true,
     componentProps: {
-      valueFormat: 'YYYY-MM-DD',
+      // valueFormat: 'YYYY-MM-DD',
       style: { width: '100%' },
     },
     colProps: {
@@ -730,12 +858,12 @@ export const taskSchemas: FormSchema[] = [
     field: 'socialAt',
     component: 'DatePicker',
     label: '社保缴纳时间',
-    // required: true,
+    required: true,
     componentProps: {
-      valueFormat: 'YYYY-MM-DD',
+      // valueFormat: 'YYYY-MM-DD',
     },
 
-    show: ({ model }) => {
+    ifShow: ({ model }) => {
       return model.social === '是';
     },
   },

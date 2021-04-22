@@ -8,7 +8,7 @@ import {
 } from './model/employeeModel';
 
 enum Api {
-  GetEmployeeList = '/employee/add',
+  PostEmployeeList = '/employee/getList',
   GetEmployeeInfo = '/employee/info',
   AddEmployee = '/employee/add',
   EditEmployee = '/employee/edit',
@@ -20,7 +20,7 @@ enum Api {
  */
 
 export const getEmployeeList = (params: getEmployeeListByNameParams) => {
-  return defHttp.get<getEmployeeListResultModel>({ url: Api.GetEmployeeList, params });
+  return defHttp.post<getEmployeeListResultModel>({ url: Api.PostEmployeeList, params });
 };
 
 export const addEmployee = (params: editEmployeeParams) => {

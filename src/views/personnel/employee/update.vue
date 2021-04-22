@@ -37,7 +37,7 @@
   import { useGo } from '/@/hooks/web/usePage';
   import { PageEnum } from '/@/enums/pageEnum';
   import { useRoute, useRouter } from 'vue-router';
-
+  import { formatToDate } from '/@/utils/dateUtil';
   import { useMessage } from '/@/hooks/web/useMessage';
 
   import { useMultipleTabStore } from '/@/store/modules/multipleTab';
@@ -48,7 +48,8 @@
       const route = useRoute();
       const router = useRouter();
       const tabStore = useMultipleTabStore();
-      const { createErrorModal } = useMessage();
+      const { createErrorModal, createMessage } = useMessage();
+      const { success } = createMessage;
       const tableRef = ref<{ getDataSource: () => any } | null>(null);
       const go = useGo();
       const [register, { validate, setFieldsValue }] = useForm({
@@ -122,7 +123,7 @@
           console.log(res);
 
           if (res) {
-            res.socialAt = res.socialAt ? res.socialAt : '';
+            // res.socialAt = res.socialAt ? res.socialAt : '';
             setFieldsValue({
               ...res,
             });
@@ -167,6 +168,14 @@
           let params = Object.assign({}, values, studyValues, taskValues, stateValues);
 
           delete params.departmentSelect;
+
+          console.log(params);
+          params.contractAt = formatToDate(params.contractAt);
+          params.dutyTime = formatToDate(params.dutyTime);
+          params.healthAt = formatToDate(params.healthAt);
+          params.transferIn = formatToDate(params.transferIn);
+          params.socialAt = params.socialAt ? formatToDate(params.socialAt) : '1980-01-01';
+
           let res;
           if (route.params.type == 'add') {
             res = await addEmployee(params);
@@ -175,6 +184,9 @@
             res = await editEmployee(params);
           }
           console.log(res);
+          if (res) {
+            success('操作成功！');
+          }
           tabStore.closeTabByKey(route.path, router);
           go(PageEnum.EMPLOYEE, true);
         } catch (error) {}
