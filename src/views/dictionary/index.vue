@@ -26,17 +26,17 @@
               icon: 'si-glyph:bullet-list',
               onClick: handleLink.bind(null, record),
             },
-            {
+          ]"
+        />
+      </template>
+      <!-- {
               icon: 'ant-design:delete-outlined',
               color: 'error',
               popConfirm: {
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
               },
-            },
-          ]"
-        />
-      </template>
+            }, -->
     </BasicTable>
     <Modal @register="registerModal" @success="handleSuccess" />
   </div>

@@ -5,6 +5,7 @@ import {
   editEmployeeParams,
   delEmployeeByIdParams,
   getEmployeeResultModel,
+  changeEmployeeStatusParams,
 } from './model/employeeModel';
 
 enum Api {
@@ -12,7 +13,9 @@ enum Api {
   GetEmployeeInfo = '/employee/info',
   AddEmployee = '/employee/add',
   EditEmployee = '/employee/edit',
-  DelEmployee = '/employee/deleteData',
+  DelEmployee = '/employee/delete',
+
+  ChangeEmployeeStatus = '/employee/changeStatus',
 }
 
 /**
@@ -37,4 +40,8 @@ export const delEmployee = (params: delEmployeeByIdParams) => {
 
 export const getEmployeeInfo = (params: delEmployeeByIdParams) => {
   return defHttp.get<getEmployeeResultModel>({ url: Api.GetEmployeeInfo, params });
+};
+
+export const changeEmployeeStatus = (params: changeEmployeeStatusParams) => {
+  return defHttp.get<getEmployeeResultModel>({ url: Api.ChangeEmployeeStatus, params });
 };

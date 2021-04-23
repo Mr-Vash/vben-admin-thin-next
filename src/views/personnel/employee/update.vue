@@ -16,6 +16,10 @@
       <BasicForm @register="registerTask" />
     </a-card>
 
+    <a-card title="附件信息" :bordered="false" class="mt-5">
+      <BasicForm @register="registerPic" />
+    </a-card>
+
     <template #leftFooter>
       <div class="custom-mb-0">
         <BasicForm @register="registerState" />
@@ -30,8 +34,8 @@
   import { BasicForm, useForm } from '/@/components/Form';
   import { defineComponent, ref } from 'vue';
   import { PageWrapper } from '/@/components/Page';
-  import { studySchemas, schemas, taskSchemas, stateSchemas } from './tableData';
-  import { Card } from 'ant-design-vue';
+  import { studySchemas, schemas, taskSchemas, stateSchemas, picSchemas } from './tableData';
+  import { Card, Upload } from 'ant-design-vue';
   import { getDepartmentSelectList } from '/@/api/personnel/department';
   import { addEmployee, getEmployeeInfo, editEmployee } from '/@/api/personnel/employee';
   import { useGo } from '/@/hooks/web/usePage';
@@ -43,7 +47,7 @@
   import { useMultipleTabStore } from '/@/store/modules/multipleTab';
 
   export default defineComponent({
-    components: { BasicForm, PageWrapper, [Card.name]: Card },
+    components: { BasicForm, PageWrapper, [Card.name]: Card, [Upload.name]: Upload },
     setup() {
       const route = useRoute();
       const router = useRouter();
@@ -117,6 +121,14 @@
         showActionButtonGroup: false,
       });
 
+      const [registerPic, { validate: validatePicForm, setFieldsValue: setPicValue }] = useForm({
+        baseColProps: {
+          span: 6,
+        },
+        schemas: picSchemas,
+        showActionButtonGroup: false,
+      });
+
       if (route.params.type == 'edit' && route.params.id) {
         async function setFormFieldValue() {
           const res = await getEmployeeInfo({ id: route.params.id.toString() });
@@ -135,6 +147,9 @@
               departmentSelect: [res.department * 1, res.station * 1, res.stationLevel * 1],
             });
             setStateValue({
+              ...res,
+            });
+            setPicValue({
               ...res,
             });
           } else {
@@ -158,14 +173,16 @@
             console.log('table data:', tableRef.value.getDataSource());
           }
 
-          const [values, studyValues, taskValues, stateValues] = await Promise.all([
+          const [values, studyValues, taskValues, picValues, stateValues] = await Promise.all([
             validate(),
             validateStudyForm(),
             validateTaskForm(),
+
+            validatePicForm(),
             validateStateForm(),
           ]);
-          console.log('form data:', values, studyValues, taskValues, stateValues);
-          let params = Object.assign({}, values, studyValues, taskValues, stateValues);
+          console.log('form data:', values, studyValues, taskValues, stateValues, picValues);
+          let params = Object.assign({}, values, studyValues, taskValues, stateValues, picValues);
 
           delete params.departmentSelect;
 
@@ -192,7 +209,15 @@
         } catch (error) {}
       }
 
-      return { register, registerStudy, registerTask, registerState, submitAll, tableRef };
+      return {
+        register,
+        registerStudy,
+        registerTask,
+        registerState,
+        registerPic,
+        submitAll,
+        tableRef,
+      };
     },
   });
 </script>

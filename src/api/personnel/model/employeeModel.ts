@@ -52,6 +52,11 @@ export interface delEmployeeByIdParams {
   id: number | string;
 }
 
+export interface changeEmployeeStatusParams {
+  id: number | string;
+  status: number | string;
+}
+
 export interface editEmployeeParams {
   name: any;
   nation: any;

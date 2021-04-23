@@ -15,6 +15,7 @@ import {
 } from '/@/api/sys/dictionary';
 import { getDateYearSub, getIdCardInfo } from '/@/utils/custom';
 import { formatToDate } from '/@/utils/dateUtil';
+import { uploadApi } from '/@/api/sys/upload';
 
 export const columns: BasicColumn[] = [
   {
@@ -36,12 +37,12 @@ export const columns: BasicColumn[] = [
   },
 
   {
-    title: '职务/角色',
+    title: '职务/角色/班次',
     dataIndex: 'role',
     width: 180,
     customRender: ({ record }) => {
       const color = 'blue';
-      const text = record.duty + '/' + record.role;
+      const text = record.duty + '/' + record.role + '/' + record.banCi;
       return h(Tag, { color: color }, () => text);
     },
   },
@@ -82,6 +83,42 @@ export const searchFormSchema: FormSchema[] = [
     label: '员工姓名',
     component: 'Input',
     colProps: { span: 4 },
+  },
+
+  {
+    field: 'sex',
+    component: 'Select',
+    label: '性别',
+
+    colProps: {
+      span: 4,
+    },
+    componentProps: {
+      options: [
+        {
+          label: '男',
+          value: '男',
+        },
+        {
+          label: '女',
+          value: '女',
+        },
+      ],
+    },
+  },
+  {
+    field: 'nation',
+    component: 'ApiSelect',
+    componentProps: {
+      api: getNationList,
+      labelField: 'name',
+      valueField: 'name',
+    },
+
+    label: '民族',
+    colProps: {
+      span: 4,
+    },
   },
   {
     field: 'banCi',
@@ -163,6 +200,7 @@ export const searchFormSchema: FormSchema[] = [
   //   // },
 
   // },
+
   {
     field: 'endAge',
     label: '-',
@@ -187,6 +225,32 @@ export const searchFormSchema: FormSchema[] = [
     },
   },
   {
+    field: 'duty',
+    component: 'ApiSelect',
+    label: '职务',
+    componentProps: {
+      api: getDutyList,
+      labelField: 'name',
+      valueField: 'name',
+    },
+    colProps: {
+      span: 4,
+    },
+  },
+  {
+    field: 'role',
+    component: 'ApiSelect',
+    label: '角色',
+    componentProps: {
+      api: getRoleList,
+      labelField: 'name',
+      valueField: 'name',
+    },
+    colProps: {
+      span: 4,
+    },
+  },
+  {
     field: 'dutyTimeRange',
     component: 'RangePicker',
     label: '入职时间',
@@ -196,6 +260,67 @@ export const searchFormSchema: FormSchema[] = [
       onChange(e) {
         console.log(e);
       },
+    },
+  },
+  {
+    field: 'contractAtRange',
+    component: 'RangePicker',
+    label: '合同签订时间',
+    colProps: { span: 8 },
+    componentProps: {
+      valueFormat: 'YYYY-MM-DD',
+      onChange(e) {
+        console.log(e);
+      },
+    },
+  },
+  {
+    field: 'healthAtRange',
+    component: 'RangePicker',
+    label: '健康证时间',
+    colProps: { span: 8 },
+    componentProps: {
+      valueFormat: 'YYYY-MM-DD',
+      onChange(e) {
+        console.log(e);
+      },
+    },
+  },
+  {
+    field: 'social',
+    component: 'Select',
+    label: '是否交社保',
+    colProps: { span: 4 },
+    componentProps: ({ formModel }) => {
+      return {
+        options: [
+          {
+            label: '是',
+            value: '是',
+          },
+          {
+            label: '否',
+            value: '否',
+          },
+        ],
+        onChange() {
+          formModel.socialAtRange = [];
+        },
+      };
+    },
+  },
+
+  {
+    field: 'socialAtRange',
+    component: 'RangePicker',
+    label: '社保缴纳时间',
+    colProps: { span: 8 },
+    componentProps: {
+      valueFormat: 'YYYY-MM-DD',
+    },
+
+    ifShow: ({ model }) => {
+      return model.social === '是';
     },
   },
 ];
@@ -880,6 +1005,21 @@ export const stateSchemas: FormSchema[] = [
         { label: '启用', value: '1' },
         { label: '停用', value: '3' },
       ],
+    },
+  },
+];
+
+export const picSchemas: FormSchema[] = [
+  {
+    field: 'field1',
+    component: 'Upload',
+    label: '一寸照片',
+    colProps: {
+      span: 8,
+    },
+    // rules: [{ required: true, message: '请选择上传文件' }],
+    componentProps: {
+      api: uploadApi,
     },
   },
 ];

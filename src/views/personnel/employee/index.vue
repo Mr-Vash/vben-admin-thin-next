@@ -73,7 +73,7 @@
   import EmployeeDrawer from './components/EmployeeDrawer.vue';
   import { Input, InputNumber } from 'ant-design-vue';
   import { getBasicData, columns, searchFormSchema } from './tableData';
-  import { getEmployeeList } from '/@/api/personnel/employee';
+  import { getEmployeeList, changeEmployeeStatus, delEmployee } from '/@/api/personnel/employee';
 
   import { useGo } from '/@/hooks/web/usePage';
   import { PageEnum } from '/@/enums/pageEnum';
@@ -134,19 +134,24 @@
         go(PageEnum.EMPLOYEE_UPDATE + '/edit/' + record.id);
       }
 
-      function handleAdd(record: Recordable) {
+      function handleAdd() {
         go(PageEnum.EMPLOYEE_UPDATE + '/add');
       }
 
-      function handleDelete(record: Recordable) {
+      async function handleDelete(record: Recordable) {
         console.log(record);
+        await delEmployee({ id: record.id });
+        reload();
       }
 
       function handleSuccess() {
         reload();
       }
 
-      function handleOpen() {}
+      async function handleOpen(record: Recordable) {
+        await changeEmployeeStatus({ id: record.id, status: record.status == 1 ? 3 : 1 });
+        reload();
+      }
 
       function handlePreview(record: Recordable) {
         openDrawer(true, {
