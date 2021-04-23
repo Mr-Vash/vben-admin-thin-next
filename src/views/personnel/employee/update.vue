@@ -150,7 +150,11 @@
               ...res,
             });
             setPicValue({
-              ...res,
+              userImg: res.userImg ? [res.userImg] : [],
+              frontImg: res.frontImg ? [res.frontImg] : [],
+              backImg: res.backImg ? [res.backImg] : [],
+              healthImg: res.healthImg ? [res.healthImg] : [],
+              bankImg: res.bankImg ? [res.bankImg] : [],
             });
           } else {
             createErrorModal({
@@ -192,6 +196,12 @@
           params.healthAt = formatToDate(params.healthAt);
           params.transferIn = formatToDate(params.transferIn);
           params.socialAt = params.socialAt ? formatToDate(params.socialAt) : '1980-01-01';
+
+          params.userImg = params.userImg ? params.userImg[0] : '';
+          params.frontImg = params.frontImg ? params.frontImg[0] : '';
+          params.backImg = params.backImg ? params.backImg[0] : '';
+          params.healthImg = params.healthImg ? params.healthImg[0] : '';
+          params.bankImg = params.bankImg ? params.bankImg[0] : '';
 
           let res;
           if (route.params.type == 'add') {

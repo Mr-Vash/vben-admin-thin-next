@@ -39,6 +39,11 @@ export interface EmployeeItem {
   social: any;
   socialAt: any;
   status: any;
+  userImg: any;
+  frontImg: any;
+  backImg: any;
+  healthImg: any;
+  bankImg: any;
 }
 
 /**
@@ -98,6 +103,11 @@ export interface editEmployeeParams {
   social: any;
   socialAt: any;
   status: any;
+  userImg: any;
+  frontImg: any;
+  backImg: any;
+  healthImg: any;
+  bankImg: any;
   id?: number | string;
 }
 

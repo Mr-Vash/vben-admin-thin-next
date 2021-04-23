@@ -44,6 +44,13 @@
       @register="register3"
       class="mt-4"
     />
+    <Description
+      :collapseOptions="{ canExpand: true }"
+      :data="mockData.data"
+      :column="3"
+      @register="register4"
+      class="mt-4"
+    />
   </BasicDrawer>
 </template>
 <script lang="ts">
@@ -239,6 +246,82 @@
     },
   ];
 
+  import { h } from 'vue';
+  import { Image } from 'ant-design-vue';
+
+  const schema4: DescItem[] = [
+    {
+      field: 'userImg',
+      label: '照片',
+      labelMinWidth: 70,
+      contentMinWidth: 100,
+      render: (curVal) => {
+        return curVal
+          ? h(Image, {
+              src: curVal,
+              width: 80,
+            })
+          : '无';
+      },
+    },
+    {
+      field: 'frontImg',
+      label: '身份证正面',
+      labelMinWidth: 70,
+      contentMinWidth: 100,
+      render: (curVal) => {
+        return curVal
+          ? h(Image, {
+              src: curVal,
+              width: 80,
+            })
+          : '无';
+      },
+    },
+    {
+      field: 'backImg',
+      label: '身份证反面',
+      labelMinWidth: 70,
+      contentMinWidth: 100,
+      render: (curVal) => {
+        return curVal
+          ? h(Image, {
+              src: curVal,
+              width: 80,
+            })
+          : '无';
+      },
+    },
+    {
+      field: 'healthImg',
+      label: '健康证照片',
+      labelMinWidth: 70,
+      contentMinWidth: 100,
+      render: (curVal) => {
+        return curVal
+          ? h(Image, {
+              src: curVal,
+              width: 80,
+            })
+          : '无';
+      },
+    },
+    {
+      field: 'bankImg',
+      label: '银行卡照片',
+      labelMinWidth: 70,
+      contentMinWidth: 100,
+      render: (curVal) => {
+        return curVal
+          ? h(Image, {
+              src: curVal,
+              width: 80,
+            })
+          : '无';
+      },
+    },
+  ];
+
   export default defineComponent({
     name: 'EmployeeDrawer',
     components: { BasicDrawer, Description },
@@ -297,6 +380,11 @@
         schema: schema3,
       });
 
+      const [register4] = useDescription({
+        title: '附件信息',
+        schema: schema4,
+      });
+
       const getTitle = computed(() => (!unref(isUpdate) ? '员工信息' : '员工信息'));
 
       async function handleSubmit() {
@@ -317,9 +405,11 @@
         schema1,
         schema2,
         schema3,
+        schema4,
         register1,
         register2,
         register3,
+        register4,
         getTitle,
         handleSubmit,
       };

@@ -1011,15 +1011,69 @@ export const stateSchemas: FormSchema[] = [
 
 export const picSchemas: FormSchema[] = [
   {
-    field: 'field1',
+    field: 'userImg',
     component: 'Upload',
     label: '一寸照片',
     colProps: {
       span: 8,
     },
-    // rules: [{ required: true, message: '请选择上传文件' }],
     componentProps: {
       api: uploadApi,
+      maxNumber: 1,
+      multiple: false,
+    },
+  },
+
+  {
+    field: 'frontImg',
+    component: 'Upload',
+    label: '身份证正面',
+    colProps: {
+      span: 8,
+    },
+    componentProps: {
+      api: uploadApi,
+      maxNumber: 1,
+      multiple: false,
+    },
+  },
+  {
+    field: 'backImg',
+    component: 'Upload',
+    label: '身份证反面',
+    colProps: {
+      span: 8,
+    },
+    componentProps: {
+      api: uploadApi,
+      maxNumber: 1,
+      multiple: false,
+    },
+  },
+  {
+    field: 'healthImg',
+    component: 'Upload',
+    label: '健康证',
+    colProps: {
+      span: 8,
+    },
+    componentProps: {
+      api: uploadApi,
+      maxNumber: 1,
+      multiple: false,
+    },
+  },
+  {
+    field: 'bankImg',
+    component: 'Upload',
+    label: '银行卡',
+    colProps: {
+      span: 8,
+    },
+    componentProps: {
+      api: uploadApi,
+      maxNumber: 1,
+      multiple: false,
     },
   },
 ];
