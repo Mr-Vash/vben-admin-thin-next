@@ -8,6 +8,7 @@ import type {
 
 import { ComponentType } from './componentType';
 import { VueNode } from '/@/utils/propTypes';
+import { RoleEnum } from '/@/enums/roleEnum';
 
 export declare type SortOrder = 'ascend' | 'descend';
 
@@ -170,10 +171,10 @@ export interface BasicTableProps<T = any> {
   emptyDataIsShowTable?: boolean;
   // 额外的请求参数
   searchInfo?: Recordable;
+  // 隐藏表单
+  formDisplay?: boolean;
   // 使用搜索表单
   useSearchForm?: boolean;
-  // 显示搜索表单
-  formDisplay?: boolean;
   // 表单配置
   formConfig?: Partial<FormProps>;
   // 列配置
@@ -423,4 +424,8 @@ export interface BasicColumn extends ColumnProps {
   editRule?: boolean | ((text: string, record: Recordable) => Promise<string>);
   editValueMap?: (value: any) => string;
   onEditRow?: () => void;
+  // 权限编码控制是否显示
+  auth?: RoleEnum | RoleEnum[] | string | string[];
+  // 业务控制是否显示
+  ifShow?: boolean | ((column: BasicColumn) => boolean);
 }

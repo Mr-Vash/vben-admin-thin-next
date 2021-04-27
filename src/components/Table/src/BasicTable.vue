@@ -5,7 +5,6 @@
         submitOnReset
         v-bind="getFormProps"
         v-if="getBindValues.useSearchForm"
-        :submitButtonOptions="{ loading: getLoading }"
         :tableAction="tableAction"
         @register="registerForm"
         @submit="handleSearchInfoChange"
@@ -184,7 +183,7 @@
         replaceFormSlotKey,
         getFormSlotKeys,
         handleSearchInfoChange,
-      } = useTableForm(getProps, slots, fetch);
+      } = useTableForm(getProps, slots, fetch, getLoading);
 
       const getBindValues = computed(() => {
         const dataSource = unref(getDataSourceRef);
@@ -314,7 +313,7 @@
         padding: 12px 10px 6px 10px;
         margin-bottom: 16px;
         background-color: @component-background;
-        border-radius: 4px;
+        border-radius: 2px;
       }
     }
 
