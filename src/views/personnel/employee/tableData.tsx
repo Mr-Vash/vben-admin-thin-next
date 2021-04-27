@@ -804,11 +804,16 @@ export const taskSchemas: FormSchema[] = [
     field: 'dutyTime',
     component: 'DatePicker',
     label: '入职时间',
-    required: true,
+    rules: [
+      {
+        type: 'string',
+        required: true,
+      },
+    ],
     componentProps: ({ formModel }) => {
       return {
         style: { width: '100%' },
-        // valueFormat: 'YYYY-MM-DD',
+        valueFormat: 'YYYY-MM-DD',
         onChange: (e) => {
           console.log(e);
           const datePicker = formatToDate(e);
@@ -909,12 +914,16 @@ export const taskSchemas: FormSchema[] = [
     field: 'transferIn',
     component: 'DatePicker',
     label: '调入时间',
-    required: true,
+    rules: [
+      {
+        type: 'string',
+        required: true,
+      },
+    ],
     componentProps: {
-      // valueFormat: 'YYYY-MM-DD',
+      valueFormat: 'YYYY-MM-DD',
       style: { width: '100%' },
     },
-    // required: true,
     colProps: {
       offset: 2,
     },
@@ -932,10 +941,15 @@ export const taskSchemas: FormSchema[] = [
     field: 'contractAt',
     component: 'DatePicker',
     label: '合同签订时间',
-    required: true,
+    rules: [
+      {
+        type: 'string',
+        required: true,
+      },
+    ],
     defaultValue: '',
     componentProps: {
-      // valueFormat: 'YYYY-MM-DD',
+      valueFormat: 'YYYY-MM-DD',
       style: { width: '100%' },
     },
   },
@@ -943,9 +957,14 @@ export const taskSchemas: FormSchema[] = [
     field: 'healthAt',
     component: 'DatePicker',
     label: '健康证时间',
-    required: true,
+    rules: [
+      {
+        type: 'string',
+        required: true,
+      },
+    ],
     componentProps: {
-      // valueFormat: 'YYYY-MM-DD',
+      valueFormat: 'YYYY-MM-DD',
       style: { width: '100%' },
     },
     colProps: {
@@ -983,9 +1002,14 @@ export const taskSchemas: FormSchema[] = [
     field: 'socialAt',
     component: 'DatePicker',
     label: '社保缴纳时间',
-    required: true,
+    rules: [
+      {
+        type: 'string',
+        required: true,
+      },
+    ],
     componentProps: {
-      // valueFormat: 'YYYY-MM-DD',
+      valueFormat: 'YYYY-MM-DD',
     },
 
     ifShow: ({ model }) => {

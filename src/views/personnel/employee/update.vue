@@ -191,11 +191,14 @@
           delete params.departmentSelect;
 
           console.log(params);
-          params.contractAt = formatToDate(params.contractAt);
-          params.dutyTime = formatToDate(params.dutyTime);
-          params.healthAt = formatToDate(params.healthAt);
-          params.transferIn = formatToDate(params.transferIn);
-          params.socialAt = params.socialAt ? formatToDate(params.socialAt) : '1980-01-01';
+          // params.contractAt = formatToDate(params.contractAt);
+          // params.dutyTime = formatToDate(params.dutyTime);
+          // params.healthAt = formatToDate(params.healthAt);
+          // params.transferIn = formatToDate(params.transferIn);
+          // params.socialAt = params.socialAt ? formatToDate(params.socialAt) : '1980-01-01';
+
+          // 后端要求必须传的最小日期
+          params.socialAt = params.socialAt ? params.socialAt : '1980-01-01';
 
           params.userImg = params.userImg ? params.userImg[0] : '';
           params.frontImg = params.frontImg ? params.frontImg[0] : '';
