@@ -1,6 +1,8 @@
 import { MockMethod } from 'vite-plugin-mock';
 import { resultError, resultSuccess } from '../_util';
 
+// import { getEnvConfig } from '../../build/utils';
+
 function createFakeUserList() {
   return [
     {
@@ -42,7 +44,7 @@ const fakeCodeList: any = {
 export default [
   // mock user login
   {
-    url: '/pro/login',
+    url: process.env.VITE_GLOB_API_URL == '/dev' ? '/dev/login' : '/login',
     timeout: 200,
     method: 'post',
     response: ({ body }) => {
@@ -65,7 +67,7 @@ export default [
     },
   },
   {
-    url: '/pro/getUserInfoById',
+    url: process.env.VITE_GLOB_API_URL == '/dev' ? '/dev/getUserInfoById' : '/getUserInfoById',
     method: 'get',
     response: ({ query }) => {
       const { userId } = query;
@@ -77,7 +79,8 @@ export default [
     },
   },
   {
-    url: '/basic-api/getPermCodeByUserId',
+    url:
+      process.env.VITE_GLOB_API_URL == '/dev' ? '/dev/getPermCodeByUserId' : '/getPermCodeByUserId',
     timeout: 200,
     method: 'get',
     response: ({ query }) => {
