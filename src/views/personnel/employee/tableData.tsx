@@ -131,6 +131,24 @@ export const searchFormSchema: FormSchema[] = [
     },
     colProps: { span: 4 },
   },
+  // {
+  //   field: 'yearRange',
+  //   label: '年龄',
+  //   component: 'Slider',
+  //   componentProps: {
+  //     min: 18,
+  //     max: 99,
+  //     range: true,
+  //     marks:{
+  //       18:'18岁',
+  //       99:'99岁'
+  //     },
+  //     onChange:(e)=>{
+  //       console.log(e)
+  //     }
+  //   },
+  //   colProps: { span: 7 },
+  // },
   {
     field: 'startAge',
     label: '年龄',

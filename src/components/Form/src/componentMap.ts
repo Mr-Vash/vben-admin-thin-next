@@ -16,6 +16,7 @@ import {
   Switch,
   TimePicker,
   TreeSelect,
+  Slider,
 } from 'ant-design-vue';
 
 import RadioButtonGroup from './components/RadioButtonGroup.vue';
@@ -34,6 +35,8 @@ componentMap.set('InputSearch', Input.Search);
 componentMap.set('InputTextArea', Input.TextArea);
 componentMap.set('InputNumber', InputNumber);
 componentMap.set('AutoComplete', AutoComplete);
+
+componentMap.set('Slider', Slider);
 
 componentMap.set('Select', Select);
 componentMap.set('ApiSelect', ApiSelect);
